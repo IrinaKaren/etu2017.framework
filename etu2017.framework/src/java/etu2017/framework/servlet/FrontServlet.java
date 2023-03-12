@@ -10,22 +10,25 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 
 /**
  *
  * @author Johan
  */
 public class FrontServlet extends HttpServlet {
+   HashMap<String,Mapping> MappingURLS;
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    //getters
+      public HashMap<String, Mapping> getMappingURLS() {
+          return MappingURLS;
+      }
+
+      //setters
+      public void setMappingURLS(HashMap<String, Mapping> MappingURLS) {
+          this.MappingURLS = MappingURLS;
+      }
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
