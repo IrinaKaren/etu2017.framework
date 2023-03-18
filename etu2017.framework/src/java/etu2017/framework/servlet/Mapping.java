@@ -7,15 +7,20 @@ package etu2017.framework.servlet;
 
 /**
  *
- * @author Johan
+ * @author IrinaKaren
  */
 public class Mapping {
-    String name;
+    String className;
     String method;
 
+    public Mapping(String className, String method) {
+        this.className = className;
+        this.method = method;
+    }
+
     //Getters
-    public String getName() {
-        return name;
+    public String getClassName() {
+        return className;
     }
      public String getMethod() {
         return method;
@@ -25,7 +30,7 @@ public class Mapping {
     public void setMethod(String method) {
         this.method = method;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setClassName(String name) {
+        this.className = name;
     }   
 }

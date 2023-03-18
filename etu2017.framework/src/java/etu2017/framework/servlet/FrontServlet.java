@@ -4,17 +4,22 @@
  */
 package etu2017.framework.servlet;
 
+import annotation.Url;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
- * @author Johan
+ * @author IirnaKaren
  */
 public class FrontServlet extends HttpServlet {
    HashMap<String,Mapping> MappingURLS;
@@ -24,11 +29,43 @@ public class FrontServlet extends HttpServlet {
           return MappingURLS;
       }
 
-      //setters
-      public void setMappingURLS(HashMap<String, Mapping> MappingURLS) {
-          this.MappingURLS = MappingURLS;
-      }
+    //setters
+    public void setMappingURLS(HashMap<String, Mapping> MappingURLS) {
+        this.MappingURLS = MappingURLS;
+    }
     
+   @Override
+   public void init() throws ServletException{
+       try{
+        MappingURLS = new HashMap<>();        
+        String path = FrontServlet.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String decodedPath = java.net.URLDecoder.decode(path, "UTF-8");
+        String currentDirectory = new java.io.File(decodedPath).getParent()+"\\classes\\etu2017\\framework\\servlet";
+
+        File dir = new File(currentDirectory);
+        File[] files = dir.listFiles();        
+                
+            for (File file : files) {
+            String[] filename = file.getName().split("\\.");
+            Class className = Class.forName("etu2017.framework.servlet."+filename[0]);
+            if(className!=null){
+                 Method[] methods = className.getDeclaredMethods();
+                for (Method met : methods) {               
+                    if (met.isAnnotationPresent(Url.class)) {
+                    Url annotation = met.getAnnotation(Url.class);
+                    String urlValue = annotation.value();
+                        MappingURLS.put(urlValue, new Mapping(className.getSimpleName(), met.getName()));                             
+                    }
+                }
+            }            
+        }
+       }
+       catch(UnsupportedEncodingException | ClassNotFoundException | SecurityException ex){
+          
+        }
+    }
+       
+   
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -57,34 +94,20 @@ public class FrontServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-            String url = request.getRequestURI();
+        throws ServletException, IOException {
+            /*String url = request.getRequestURI();
             response.setContentType("text/plain");
             response.getWriter().write(url);
+            PrintWriter out = response.getWriter();*/
+            response.setContentType("text/html");
+            PrintWriter out = response.getWriter();
+            out.println("<html><body>");
+            out.println("<h1>Liste des mappings :</h1>");
+            for (Map.Entry<String, Mapping> entry : MappingURLS.entrySet()) {
+               out.println("<p>URL: " + entry.getKey() + "</p>");
+               out.println("<p>Class: " + entry.getValue().getClassName() + "</p>");
+               out.println("<p>Method: " + entry.getValue().getMethod() + "</p><br>");
+            }
+            out.println("</body></html>");
     }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-                processRequest(request, response);
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }
