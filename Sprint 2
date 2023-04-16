@@ -1,0 +1,6 @@
+# etu2017.framework
+Creation class Mapping avec 2 attributs 
+  -ClassName de type String
+  -Method de type String
+ Creation d'un attribut MappingUrls de type HashMap<String,Mapping> dans la classe FrontServlet
+ Sprint 2 merger et supprimer
